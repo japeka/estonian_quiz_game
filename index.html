@@ -1,0 +1,305 @@
+<html><head><base href="https://websim.ai/estonian-language-quiz/" />
+<title>Estonian Language Quiz</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+    color: #333;
+  }
+  h1 {
+    color: #003399;
+    text-align: center;
+  }
+  .difficulty-selection, .question, .result {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  button {
+    background-color: #003399;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #0055cc;
+  }
+  .answer-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+  .progress {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  .result {
+    text-align: center;
+    font-size: 1.2em;
+  }
+</style>
+</head>
+<body>
+  <h1>Estonian Language Quiz</h1>
+  <div id="app">
+    <div v-if="gameState === 'start'" class="difficulty-selection">
+      <h2>Select Difficulty:</h2>
+      <button @click="startGame('easy')">Easy</button>
+      <button @click="startGame('medium')">Medium</button>
+      <button @click="startGame('hard')">Hard</button>
+    </div>
+    <div v-if="gameState === 'quiz'" class="question">
+      <div class="progress">Question {{ currentQuestion + 1 }} of 10</div>
+      <h2>{{ questions[currentQuestion].question }}</h2>
+      <button 
+        v-for="(answer, index) in questions[currentQuestion].answers" 
+        :key="index"
+        @click="checkAnswer(index)"
+        class="answer-btn"
+      >
+        {{ answer }}
+      </button>
+    </div>
+    <div v-if="gameState === 'end'" class="result">
+      <h2>Quiz Completed!</h2>
+      <p>Your score: {{ score }} out of 10</p>
+      <button @click="resetGame">Play Again</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        gameState: 'start',
+        difficulty: '',
+        questions: [],
+        currentQuestion: 0,
+        score: 0
+      },
+      methods: {
+        startGame(difficulty) {
+          this.difficulty = difficulty;
+          this.questions = this.generateQuestions(difficulty);
+          this.gameState = 'quiz';
+          this.currentQuestion = 0;
+          this.score = 0;
+        },
+        checkAnswer(index) {
+          if (index === this.questions[this.currentQuestion].correctIndex) {
+            this.score++;
+          }
+          this.nextQuestion();
+        },
+        nextQuestion() {
+          if (this.currentQuestion < 9) {
+            this.currentQuestion++;
+          } else {
+            this.gameState = 'end';
+          }
+        },
+        resetGame() {
+          this.gameState = 'start';
+        },
+        generateQuestions(difficulty) {
+          const questionSets = {
+            easy: [
+              {
+                question: "What is 'Hello' in Estonian?",
+                answers: ["Tere", "Nägemist", "Aitäh", "Palun"],
+                correctIndex: 0
+              },
+              {
+                question: "Which word means 'Thank you' in Estonian?",
+                answers: ["Vabandust", "Palun", "Aitäh", "Jah"],
+                correctIndex: 2
+              },
+              {
+                question: "What is the Estonian word for 'Yes'?",
+                answers: ["Ei", "Jah", "Võib-olla", "Tere"],
+                correctIndex: 1
+              },
+              {
+                question: "How do you say 'Goodbye' in Estonian?",
+                answers: ["Tere tulemast", "Head aega", "Vabandust", "Palun"],
+                correctIndex: 1
+              },
+              {
+                question: "What does 'Kuidas läheb?' mean?",
+                answers: ["What's your name?", "How are you?", "Where are you going?", "What time is it?"],
+                correctIndex: 1
+              },
+              {
+                question: "Which is the correct translation for 'Please' in Estonian?",
+                answers: ["Aitäh", "Vabandust", "Palun", "Jah"],
+                correctIndex: 2
+              },
+              {
+                question: "What is 'Water' in Estonian?",
+                answers: ["Vesi", "Piim", "Kohv", "Tee"],
+                correctIndex: 0
+              },
+              {
+                question: "How do you say 'Good morning' in Estonian?",
+                answers: ["Head õhtut", "Tere õhtust", "Tere hommikust", "Head ööd"],
+                correctIndex: 2
+              },
+              {
+                question: "What is the Estonian word for 'No'?",
+                answers: ["Jah", "Ei", "Võib-olla", "Mitte"],
+                correctIndex: 1
+              },
+              {
+                question: "How do you say 'My name is...' in Estonian?",
+                answers: ["Minu nimi on...", "Ma olen...", "Kuidas sind kutsutakse?", "Kes sa oled?"],
+                correctIndex: 0
+              }
+            ],
+            medium: [
+              {
+                question: "Which case is used to express the object of an action in Estonian?",
+                answers: ["Nominative", "Genitive", "Partitive", "Illative"],
+                correctIndex: 2
+              },
+              {
+                question: "What is the correct form of 'suur' (big) in the sentence 'I live in a ___ house'?",
+                answers: ["suures", "suurt", "suurele", "suurest"],
+                correctIndex: 0
+              },
+              {
+                question: "How do you say 'I speak a little Estonian' in Estonian?",
+                answers: ["Ma räägin natuke eesti keelt", "Ma oskan eesti keelt", "Ma õpin eesti keelt", "Ma ei räägi eesti keelt"],
+                correctIndex: 0
+              },
+              {
+                question: "What is the correct word order in Estonian for 'The cat is sleeping on the chair'?",
+                answers: ["Kass magab toolil", "Toolil magab kass", "Magab kass toolil", "Kass toolil magab"],
+                correctIndex: 0
+              },
+              {
+                question: "Which word is the odd one out?",
+                answers: ["Esmaspäev", "Teisipäev", "Kolmapäev", "Pühapäev"],
+                correctIndex: 3
+              },
+              {
+                question: "What is the correct translation of 'I need to go to the store'?",
+                answers: ["Ma pean minema poodi", "Ma lähen poodi", "Ma tahan minna poodi", "Ma olen poes"],
+                correctIndex: 0
+              },
+              {
+                question: "Which sentence uses the correct form of the verb 'to be' in past tense?",
+                answers: ["Ma olen eile kinos", "Ma olin eile kinos", "Ma olema eile kinos", "Ma on eile kinos"],
+                correctIndex: 1
+              },
+              {
+                question: "What does 'öökull' mean in English?",
+                answers: ["Nightingale", "Owl", "Bat", "Moon"],
+                correctIndex: 1
+              },
+              {
+                question: "Which is the correct plural form of 'raamat' (book)?",
+                answers: ["raamatid", "raamatud", "raamatod", "raamati"],
+                correctIndex: 1
+              },
+              {
+                question: "What is the Estonian equivalent of the phrase 'Nice to meet you'?",
+                answers: ["Meeldiv kohata", "Rõõm kohtuda", "Tore näha", "Hea tuttavaks saada"],
+                correctIndex: 1
+              }
+            ],
+            hard: [
+              {
+                question: "Which case is used in the sentence 'Ma lähen kinno' (I'm going to the cinema)?",
+                answers: ["Illative", "Inessive", "Allative", "Adessive"],
+                correctIndex: 0
+              },
+              {
+                question: "What is the correct translation of 'If I had known, I would have come earlier'?",
+                answers: [
+                  "Kui ma oleksin teadnud, oleksin varem tulnud",
+                  "Kui ma teaksin, tulen varem",
+                  "Kui ma tean, tulen varem",
+                  "Kui ma oleks teadnud, tulen varem"
+                ],
+                correctIndex: 0
+              },
+              {
+                question: "Which word does not belong to the same group?",
+                answers: ["Kellega", "Millega", "Kuidas", "Milleks"],
+                correctIndex: 2
+              },
+              {
+                question: "What is the correct impersonal form of the verb 'lugema' (to read) in present tense?",
+                answers: ["loetakse", "lugetakse", "loetakse", "loete"],
+                correctIndex: 0
+              },
+              {
+                question: "Which sentence uses the correct form of the superlative?",
+                answers: [
+                  "See on kõige ilusam lill",
+                  "See on ilusaim lill",
+                  "See on kõige ilusaim lill",
+                  "Both A and B are correct"
+                ],
+                correctIndex: 3
+              },
+              {
+                question: "What does the phrase 'Küll ma teen seda homme' imply?",
+                answers: [
+                  "I will definitely do it tomorrow",
+                  "I might do it tomorrow",
+                  "I won't do it tomorrow",
+                  "I don't want to do it tomorrow"
+                ],
+                correctIndex: 0
+              },
+              {
+                question: "Which is the correct translation of 'She must have forgotten'?",
+                answers: [
+                  "Ta pidi unustama",
+                  "Ta peab olema unustanud",
+                  "Ta oleks pidanud unustama",
+                  "Ta unustas kindlasti"
+                ],
+                correctIndex: 1
+              },
+              {
+                question: "What is the meaning of the idiomatic expression 'Käsi peseb kätt'?",
+                answers: [
+                  "Literal meaning: Hand washes hand",
+                  "You scratch my back, I'll scratch yours",
+                  "Cleanliness is next to godliness",
+                  "Work hard to succeed"
+                ],
+                correctIndex: 1
+              },
+              {
+                question: "Which case is used in the phrase 'Ta on minust vanem' (He is older than me)?",
+                answers: ["Elative", "Ablative", "Comparative", "Partitive"],
+                correctIndex: 0
+              },
+              {
+                question: "What is the correct form of the verb 'sööma' (to eat) in the da-infinitive?",
+                answers: ["söödud", "söönud", "süüa", "sööma"],
+                correctIndex: 2
+              }
+            ]
+          };
+          return questionSets[difficulty];
+        }
+      }
+    });
+  </script>
+</body></html>
